@@ -124,19 +124,19 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-AWS_ACCESS_KEY_ID = "AKIAQ6MBRORNLTUS7G6K"
-AWS_SECRET_ACCESS_KEY = "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"
-AWS_STORAGE_BUCKET_NAME = "project1-bucket-123456"
-AWS_S3_REGION_NAME = "us-east-1"
-AWS_DEFAULT_ACL = None
-AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
-AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age=86400"}
 
-# AWS_LOCATION = "static"
-# STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_LOCATION}/"
-AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age=86400"}
-
-DEFAULT_FILE_STORAGE = "s3upload.s3-details.CustomS3Boto3Storage"
-# Media files settings
-MEDIA_URL = "/media/"
-MEDIA_ROOT = Path(BASE_DIR, "media")
+# DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+{
+    "STORAGES": {
+        "default": {
+            "BACKEND": "storages.backends.s3.S3Storage",
+            "OPTIONS": {
+                "AWS_ACCESS_KEY_ID": "AKIAQ6MBRORNLTUS7G6K",
+                "AWS_SECRET_ACCESS_KEY_ID": "2WDXDEaDdTqndMob3Cx5CoMTd63vF8s2L0qSqDXX",
+                "AWS_STORAGE_BUCKET_NAME": "project1-bucket-123456",
+                "AWS_S3_REGION_NAME": "us-east-1",
+            },
+        },
+        "STATICFILES_STORAGE": "storages.backends.s3.S3Storage",
+    }
+}

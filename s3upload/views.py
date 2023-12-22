@@ -21,17 +21,24 @@ def upload_to_s3(file, bucket_name, object_name=None, request=None):
     :param object_name: S3 object name (key)
     :return: True if successful, else False
     """
+    storage_config = getattr(settings, "STORAGES", {}).get("default", {})
+    AWS_ACCESS_KEY_ID = storage_config.get("OPTIONS", {}).get("AWS_ACCESS_KEY_ID", None)
+    AWS_SECRET_ACCESS_KEY = storage_config.get("OPTIONS", {}).get(
+        "AWS_SECRET_ACCESS_KEY", None
+    )
     try:
         s3_client = boto3.client(
             "s3",
-            aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+            aws_access_key_id=AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
         )
 
         if object_name is None:
             object_name = file.name
+            print(f"object_name: {object_name}")
 
-        s3_client.upload_fileobj(file, bucket_name, object_name, request)
+        s3_client.upload_file(file, bucket_name, object_name)
+        print(f"s3_client: {s3_client}")
         print(f"Successfully uploaded {object_name} to {bucket_name}")
         return True
 
@@ -46,7 +53,11 @@ def upload_to_s3(file, bucket_name, object_name=None, request=None):
 def upload_file(request):
     if request.method == "POST":
         file = request.FILES["image"]
-        bucket_name = settings.AWS_STORAGE_BUCKET_NAME
+        storage_config = getattr(settings, "STORAGES", {}).get("default", {})
+        bucket_name = storage_config.get("OPTIONS", {}).get(
+            "AWS_STORAGE_BUCKET_NAME", None
+        )
+        # bucket_name = settings.AWS_STORAGE_BUCKET_NAME
         if upload_to_s3(file, bucket_name, request=request):
             print("Passed this area,upload_file")
             messages.success(request, "File uploaded successfully to S3!")
