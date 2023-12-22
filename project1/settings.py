@@ -11,9 +11,20 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+import environ
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+env = environ.Env(
+    # set casting, default value
+    DEBUG=(bool, False)
+)
+
+# Take environment variables from .env file
+environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 
 
 # Quick-start development settings - unsuitable for production
@@ -124,19 +135,28 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-
+# Setting for Django storages implemetation for django 4.2 >=
 # DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
-{
-    "STORAGES": {
-        "default": {
-            "BACKEND": "storages.backends.s3.S3Storage",
-            "OPTIONS": {
-                "AWS_ACCESS_KEY_ID": "AKIAQ6MBRORNLTUS7G6K",
-                "AWS_SECRET_ACCESS_KEY_ID": "2WDXDEaDdTqndMob3Cx5CoMTd63vF8s2L0qSqDXX",
-                "AWS_STORAGE_BUCKET_NAME": "project1-bucket-123456",
-                "AWS_S3_REGION_NAME": "us-east-1",
-            },
-        },
-        "STATICFILES_STORAGE": "storages.backends.s3.S3Storage",
-    }
-}
+# {
+#     "STORAGES": {
+#         "default": {
+#             "BACKEND": "storages.backends.s3.S3Storage",
+#             "OPTIONS": {
+#                 "AWS_ACCESS_KEY_ID": "AKIAQ6MBRORNLTUS7G6K",
+#                 "AWS_SECRET_ACCESS_KEY_ID": "2WDXDEaDdTqndMob3Cx5CoMTd63vF8s2L0qSqDXX",
+#                 "AWS_STORAGE_BUCKET_NAME": "project1-bucket-123456",
+#                 "AWS_S3_REGION_NAME": "us-east-1",
+#             },
+#         },
+#         "STATICFILES_STORAGE": "storages.backends.s3.S3Storage",
+#     }
+# }
+# Use Amazon S3 for storage for uploaded media files.
+DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+
+# Amazon S3 settings.
+AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY")
+AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME")
+AWS_S3_REGION_NAME = "us-east-1"
+AWS_S3_CUSTOM_DOMAIN = env("AWS_S3_CUSTOM_DOMAIN")
